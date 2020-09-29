@@ -64,7 +64,7 @@ HANGMANPICS = [
 ];
 
 const init = () => {
-  const words = require('an-array-of-english-words');               // Picking a random word from maaany
+  const words = require('an-array-of-english-words');               // Picking a random word from words lib
   failCount = 0;
   targetWord = words[Math.floor(Math.random() * words.length)];
   guessedWord = [];
@@ -87,7 +87,7 @@ const askLetter = () => {
   return (char = readlineSync.question('letter> ', {
     limit: (char) => {
       return char.length == 1;
-    }, // range of 'a' to 'z'
+    }, // length of string is 1
     limitMessage: 'Sorry, $<lastInput> is not a valid input.',
   }));
 };
