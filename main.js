@@ -1,79 +1,13 @@
-var colors = require('colors'); // For string coloring
-var logUpdate = require('log-update'); // Lib for console update, but it works pretty badly
+const colors = require('colors'); // For string coloring
+const logUpdate = require('log-update'); // Lib for console update, but it works pretty badly
+const words = require('an-array-of-english-words'); // Picking a random word from words lib
+const HANGMANPICS = require('./pics');
 
 let targetWord;
 let guessedWord;
 let failCount;
 
-// Hangman stages
-HANGMANPICS = [
-  `
-
-  +---+
-  |   |
-      |
-      |
-      |
-      |
-=========`,
-  `
-
-  +---+
-  |   |
-  O   |
-      |
-      |
-      |
-=========`,
-  `
-  
-  +---+
-  |   |
-  O   |
-  |   |
-      |
-      |
-=========`,
-  `
- 
-  +---+
-  |   |
-  O   |
- /|   |
-      |
-      |
-=========`,
-  `
- 
-  +---+
-  |   |
-  O   |
- /|\\  |
-      |
-      |
-=========`,
-  `
-  
-  +---+
-  |   |
-  O   |
- /|\\  |
- /    |
-      |
-=========`,
-  `
-  
-  +---+
-  |   |
-  O   |
- /|\\  |
- / \\  |
-      |
-=========`,
-];
-
 const init = () => {
-  const words = require('an-array-of-english-words'); // Picking a random word from words lib
   failCount = 0;
   targetWord = words[Math.floor(Math.random() * words.length)];
   guessedWord = [];
