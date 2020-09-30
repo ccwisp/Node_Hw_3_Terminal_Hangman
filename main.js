@@ -1,11 +1,14 @@
-var colors = require('colors');      // For string coloring
+var colors = require('colors'); // For string coloring
+var logUpdate = require('log-update'); // Lib for console update, but it works pretty badly
 
 let targetWord;
 let guessedWord;
 let failCount;
+
 // Hangman stages
 HANGMANPICS = [
   `
+
   +---+
   |   |
       |
@@ -14,22 +17,25 @@ HANGMANPICS = [
       |
 =========`,
   `
-  +---+
-  |   |
-  O   |
-      |
-      |
-      |
-=========`,
-  `
+
   +---+
   |   |
   O   |
+      |
+      |
+      |
+=========`,
+  `
+  
+  +---+
+  |   |
+  O   |
   |   |
       |
       |
 =========`,
   `
+ 
   +---+
   |   |
   O   |
@@ -38,6 +44,7 @@ HANGMANPICS = [
       |
 =========`,
   `
+ 
   +---+
   |   |
   O   |
@@ -46,6 +53,7 @@ HANGMANPICS = [
       |
 =========`,
   `
+  
   +---+
   |   |
   O   |
@@ -54,6 +62,7 @@ HANGMANPICS = [
       |
 =========`,
   `
+  
   +---+
   |   |
   O   |
@@ -64,11 +73,21 @@ HANGMANPICS = [
 ];
 
 const init = () => {
-  const words = require('an-array-of-english-words');               // Picking a random word from words lib
+  const words = require('an-array-of-english-words'); // Picking a random word from words lib
   failCount = 0;
   targetWord = words[Math.floor(Math.random() * words.length)];
   guessedWord = [];
 
+  console.log(
+    '\x1b[36m%s\x1b[0m',
+    `
+  ██╗  ██╗ █████╗ ███╗   ██╗ ██████╗ ███╗   ███╗ █████╗ ███╗   ██╗
+  ██║  ██║██╔══██╗████╗  ██║██╔════╝ ████╗ ████║██╔══██╗████╗  ██║
+  ███████║███████║██╔██╗ ██║██║  ███╗██╔████╔██║███████║██╔██╗ ██║
+  ██╔══██║██╔══██║██║╚██╗██║██║   ██║██║╚██╔╝██║██╔══██║██║╚██╗██║
+  ██║  ██║██║  ██║██║ ╚████║╚██████╔╝██║ ╚═╝ ██║██║  ██║██║ ╚████║
+  ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝ ╚═════╝ ╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝ `
+  );
   console.log(
     'Welcome to the game of hangman, I am going to give you some empty dashes '
       .magenta +
@@ -76,26 +95,21 @@ const init = () => {
         .magenta +
       ' well that is before you are hanged! -:)'.magenta
   );
-  console.log(targetWord);
   console.log('_ '.repeat(targetWord.length));
   console.log('\n');
 };
 
-const askLetter = () => {                                   
-  const readlineSync = require('readline-sync');                // Getting the input
-
-  return (char = readlineSync.question('letter> ', {
-    limit: (char) => {
-      return char.length == 1;
-    }, // length of string is 1
-    limitMessage: 'Sorry, $<lastInput> is not a valid input.',
-  }));
+const askLetter = () => {
+  const readlineSync = require('readline-sync'); // Getting the input
+  return (char = readlineSync.question('letter> '));
 };
 
-const checkword = (letter) => {                                                 // Check whether input char is in target word
+const checkword = (letter) => {
+  // Check whether input char is in target word
   let tick;
   for (let i = 0; i < targetWord.length; i++) {
     if (targetWord[i].toLowerCase() === letter) {
+      logUpdate(HANGMANPICS[failCount]);
       guessedWord[i] = targetWord[i];
       tick = true;
     } else if (guessedWord[i] === undefined) {
@@ -103,25 +117,28 @@ const checkword = (letter) => {                                                 
     }
   }
 
-  tick ? (tick = false) : failCount++;
+  if (tick) {
+    tick = false;
+  } else failCount++;
 
-  if (failCount === 6) {                                                    // Game over if count gets 6
-    console.log(HANGMANPICS[failCount]);
+  if (failCount === 6) {
+    // Game over if count gets 6
+    logUpdate(HANGMANPICS[failCount]);
     console.log('Game over, you are hanged'.red);
     console.log('Word is ', targetWord.america);
     nextGamePrompt();
     return;
   } else {
-    console.log(HANGMANPICS[failCount]);
+    logUpdate(HANGMANPICS[failCount]);
   }
 
   console.log(guessedWord.join(' '));
-  guessedWord.includes('_')
-    ? checkword(askLetter())
-    : console.log('You have won, shnorhavor ^_^'.rainbow);
+  if (guessedWord.includes('_')) checkword(askLetter());
+  else console.log('You have won, shnorhavor ^_^'.rainbow);
 };
 
-const nextGamePrompt = () => {                                          // Asking user whether to replay the game or not
+const nextGamePrompt = () => {
+  // Asking user whether to replay the game or not
   var readlineSync = require('readline-sync');
   if (readlineSync.keyInYN('Do you want to play again?')) {
     // 'Y' key was pressed.
@@ -132,7 +149,8 @@ const nextGamePrompt = () => {                                          // Askin
   }
 };
 
-const startGame = () => {                                                   // Starting the game
+const startGame = () => {
+  // Starting the game
   init();
   checkword(askLetter());
 };
